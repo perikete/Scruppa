@@ -33,7 +33,7 @@ namespace Scruppa.Tests
         }
 
         [Fact]
-        public void Can_Add_Run_All_Configurations()
+        public async Task Can_Add_Run_All_Configurations()
         {
             var scrapper = new TestScrapper(new TestScrapperResults { Test = true });
             var result = new TestScrapperResults { Test = true };
@@ -57,7 +57,16 @@ namespace Scruppa.Tests
             scrapperRunner.AddConfigurations(scrapper1, config4);
 
 
-            var results = scrapperRunner.RunAllConfigurations();
+            var results = await scrapperRunner.RunAllConfigurations();
+
+            var testScrapperRunResults = results.GetResultsForScrapper<TestScrapper>();
+
+            var trueResults = testScrapperRunResults.Count(o => o.Key == typeof(TestAlertConfig) && o.Value);
+            var falseResults = testScrapperRunResults.Count(o => o.Key == typeof(TestAlertConfig) && !o.Value);
+
+            Assert.Equal(4, falseResults);
+            Assert.Equal(1, trueResults);
+
 
         }
     }

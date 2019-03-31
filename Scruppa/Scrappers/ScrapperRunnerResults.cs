@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Scruppa.Scrappers
@@ -6,26 +7,37 @@ namespace Scruppa.Scrappers
     {
         public class ScrapperRunnerResults
         {
-            private readonly IDictionary<string, IList<KeyValuePair<string, string>>> _scrapperRunResults;
+            private readonly IDictionary<string, List<KeyValuePair<Type, bool>>> _scrapperRunResults;
 
             public ScrapperRunnerResults()
             {
-                _scrapperRunResults = new Dictionary<string, IList<KeyValuePair<string, string>>>();
+                _scrapperRunResults = new Dictionary<string, List<KeyValuePair<Type, bool>>>();
             }
 
             public void AddResult(BaseScrapper scrapper, IAlertConfiguration configuration, bool alertValue)
             {
 
-                var newKvp = new KeyValuePair<string, string>($"the result of the configuration {nameof(configuration)} is: ", alertValue.ToString());
-
-                if (_scrapperRunResults.ContainsKey(nameof(scrapper)))
+                var resultKvp = new KeyValuePair<Type, bool>(configuration.GetType(), alertValue);
+                var key = scrapper.GetType().Name;
+                
+                if (_scrapperRunResults.ContainsKey(key))
                 {
-                    _scrapperRunResults[nameof(scrapper)].Add(newKvp);
+                    _scrapperRunResults[key].Add(resultKvp);
                 }
                 else
                 {
-                    _scrapperRunResults.Add(nameof(scrapper), new List<KeyValuePair<string, string>> { newKvp });
+                    _scrapperRunResults.Add(key, new List<KeyValuePair<Type, bool>> { resultKvp });
                 }
+            }
+
+            public IDictionary<string, List<KeyValuePair<Type, bool>>> GetResults()
+            {
+                return _scrapperRunResults;
+            }
+            
+            public IEnumerable<KeyValuePair<Type, bool>> GetResultsForScrapper<TScrapper>()
+            {
+                return GetResults()[typeof(TScrapper).Name];
             }
         }
     }
