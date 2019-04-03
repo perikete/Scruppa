@@ -1,5 +1,4 @@
 {
-    "title": "//div[contains(@class, 'story-body')]//h1",
-    "dateTime": "//div[contains(@class, 'story-body')]//div[contains(@class, 'date')]",
-    "body": "//div[@property='articleBody']"
+    "title": "//h1[@id='productName']",
+    "price": "//span[contains(@class, 'productTopPrice')]//meta[contains(@itemprop, 'lowPrice')]/@content"
   }

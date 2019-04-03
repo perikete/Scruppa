@@ -19,8 +19,8 @@
         public bool Fired(ScrapperResults result)
         {
             var priceMeResult = (PriceMeScrapperResults)result;
-            return TitleToMatch.ToLowerInvariant() == priceMeResult.Title.ToLowerInvariant() 
-                || PriceToMatch == priceMeResult.Price; 
+            return priceMeResult.Title.ToLowerInvariant().Contains(TitleToMatch.ToLowerInvariant()) 
+                || PriceToMatch <= priceMeResult.Price; 
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Scruppa.Scrappers.PriceMe
         {
             using (var client = new HttpClient())
             {
-                var siteText = await client.GetStringAsync("https://www.bbc.com/news/world-asia-47590685");
+                var siteText = await client.GetStringAsync("https://www.priceme.co.nz/GoPro-Hero-7-Black/p-903036144.aspx");
                 return siteText;
             }
         }
