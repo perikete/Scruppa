@@ -34,11 +34,14 @@ namespace Scruppa.Tests
             _test = test;
         }
 
-        public string Description => "Test Alert";
-
         public bool Fired(ScrapperResults result)
         {
             return ((TestScrapperResults)result).Test == _test;
+        }
+
+        public string GetDescription()
+        {
+            return "Test alert configuration";
         }
     }
 }

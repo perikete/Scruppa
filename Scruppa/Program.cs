@@ -25,7 +25,11 @@ namespace Scruppa
 
             runner.AddConfigurations(priceMeScrapper, priceMeAlertConfig);
 
+            Console.WriteLine("Running scrappers...");
+            
             var results = await runner.RunAllConfigurations();
+
+            Console.WriteLine("Scrappers ran successfully, showing results...");
 
             foreach(var result in results.GetResults())
             {
@@ -33,7 +37,7 @@ namespace Scruppa
                 
                 foreach(var config in result.Value)
                 {
-                    Console.WriteLine($"with config {config.Key.Name} with value: {config.Value}.");
+                    Console.WriteLine($"for the config({config.Key.GetType().Name}): {config.Key.ScrapperAlertConfiguration.GetDescription()} with value: {config.Value}.");
                 }
             }
 
