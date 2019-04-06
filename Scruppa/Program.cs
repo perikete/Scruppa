@@ -37,7 +37,7 @@ namespace Scruppa
                 
                 foreach(var config in result.Value)
                 {
-                    Console.WriteLine($"for the config({config.Key.GetType().Name}): {config.Key.GetDescription()} with value: {config.Value}.");
+                    Console.WriteLine($"for the config({config.Key.GetType().Name}): {config.Key.ScrapperAlertConfiguration.GetDescription()} with value: {config.Value}.");
                 }
             }
 

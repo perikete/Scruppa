@@ -1,30 +1,39 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Scruppa.Scrappers
 {
     public partial class ScrapperRunner
     {
-        private readonly IDictionary<BaseScrapper, HashSet<IAlertConfiguration>> _scrapperConfigs;
+        private readonly IDictionary<BaseScrapper, HashSet<ScrapperRunnerConfiguration>> _scrapperConfigs;
 
         public ScrapperRunner()
         {
-            _scrapperConfigs = new Dictionary<BaseScrapper, HashSet<IAlertConfiguration>>();
+            _scrapperConfigs = new Dictionary<BaseScrapper, HashSet<ScrapperRunnerConfiguration>>();
         }
 
         public void AddConfigurations(BaseScrapper scrapper, IAlertConfiguration config)
         {
+            AddConfigurations(scrapper, new ScrapperRunnerConfiguration(config));
+
+        }
+
+        public void AddConfigurations(BaseScrapper scrapper, ScrapperRunnerConfiguration runnerConfig)
+        {
             if (_scrapperConfigs.ContainsKey(scrapper))
             {
-                _scrapperConfigs[scrapper].Add(config);
+                _scrapperConfigs[scrapper].Add(runnerConfig);
             }
             else
             {
-                _scrapperConfigs.Add(scrapper, new HashSet<IAlertConfiguration> { config });
+                _scrapperConfigs.Add(scrapper,
+                    new HashSet<ScrapperRunnerConfiguration> { runnerConfig });
             }
         }
 
-        public IDictionary<BaseScrapper, HashSet<IAlertConfiguration>> GetConfigurations()
+        public IDictionary<BaseScrapper, HashSet<ScrapperRunnerConfiguration>> GetConfigurations()
         {
             return _scrapperConfigs;
         }
@@ -35,14 +44,20 @@ namespace Scruppa.Scrappers
             foreach (var scrapperConfig in _scrapperConfigs)
             {
                 var scrapper = scrapperConfig.Key;
-                var configs = scrapperConfig.Value;
 
                 var result = await scrapper.Scrap();
+                var scrapperRunnerConfigs = scrapperConfig.Value;
 
-                foreach (var config in configs)
+                foreach (var scrapperRunnerConfig in scrapperRunnerConfigs)
                 {
-                    var runResult = config.Fired(result);
-                    scrapperRunResults.AddResult(scrapper, config, runResult);
+                    var runResult = scrapperRunnerConfig.ScrapperAlertConfiguration.Fired(result);
+                    
+                    if (runResult)
+                    {
+                        scrapperRunnerConfig.FireAction(result);
+                    }
+
+                    scrapperRunResults.AddResult(scrapper, scrapperRunnerConfig, runResult);
                 }
             }
 

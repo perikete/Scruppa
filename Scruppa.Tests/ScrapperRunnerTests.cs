@@ -19,17 +19,18 @@ namespace Scruppa.Tests
             var config1 = Mock.Of<IAlertConfiguration>();
             var config2 = Mock.Of<IAlertConfiguration>();
 
-
             runner.AddConfigurations(scrapper1, config1);
             runner.AddConfigurations(scrapper1, config2);
 
             var configs = runner.GetConfigurations();
-            Assert.Equal(1, configs.Count);
-            Assert.Equal(configs.First().Key, scrapper1);
-            Assert.True(configs.First().Value.Contains(config1));
-            Assert.True(configs.First().Value.Contains(config2));
 
-
+            var firstScrapperConfig = configs.First();
+            Assert.Equal(1, configs.Count());
+            Assert.Equal(firstScrapperConfig.Key, scrapper1);
+            var allAlertConfigs = firstScrapperConfig.Value.Select(o => o.ScrapperAlertConfiguration);
+            Assert.Equal(allAlertConfigs.Count(), 2);
+            Assert.True(allAlertConfigs.Any(o => o == config1));
+            Assert.True(allAlertConfigs.Any(o => o == config2));
         }
 
         [Fact]
@@ -59,15 +60,57 @@ namespace Scruppa.Tests
 
             var results = await scrapperRunner.RunAllConfigurations();
 
+            var testScrapperRunResults = results.GetResultsForScrapper<TestScrapper>()
+                .Select(o => o.Value);
+
+            Assert.Equal(4, testScrapperRunResults.Count(o => !o));
+            Assert.Equal(1, testScrapperRunResults.Count(o => o));
+        }
+
+        [Fact]
+        public async void True_Result_With_Action_To_Execute_Should_Be_Fired()
+        {
+            var runner = new ScrapperRunner();
+            var executed = false;
+
+            var result = new TestScrapperResults() { Test = true };
+            var scrapper = new TestScrapper(result);
+            var config = new TestAlertConfig(true);
+
+            var runConfig = new ScrapperRunnerConfiguration(config, (x) => { executed = ((TestScrapperResults)x).Test; });
+            runner.AddConfigurations(scrapper, runConfig);
+
+            var results = await runner.RunAllConfigurations();
+
             var testScrapperRunResults = results.GetResultsForScrapper<TestScrapper>();
 
-            var trueResults = testScrapperRunResults.Count(o => o.Key == typeof(TestAlertConfig) && o.Value);
-            var falseResults = testScrapperRunResults.Count(o => o.Key == typeof(TestAlertConfig) && !o.Value);
+            var firstResult = testScrapperRunResults.First();
+            Assert.Equal(1, testScrapperRunResults.Count());
+            Assert.True(executed);
+            Assert.True(firstResult.Value);
+        }
 
-            Assert.Equal(4, falseResults);
-            Assert.Equal(1, trueResults);
+         [Fact]
+        public async void False_Result_With_Action_To_Execute_Should_Not_Be_Fired()
+        {
+            var runner = new ScrapperRunner();
+            var executed = false;
 
+            var result = new TestScrapperResults() { Test = false };
+            var scrapper = new TestScrapper(result);
+            var config = new TestAlertConfig(true);
 
+            var runConfig = new ScrapperRunnerConfiguration(config, (x) => { executed = ((TestScrapperResults)x).Test; });
+            runner.AddConfigurations(scrapper, runConfig);
+
+            var results = await runner.RunAllConfigurations();
+
+            var testScrapperRunResults = results.GetResultsForScrapper<TestScrapper>();
+
+            var firstResult = testScrapperRunResults.First();
+            Assert.Equal(1, testScrapperRunResults.Count());
+            Assert.False(executed);
+            Assert.False(firstResult.Value);
         }
     }
 }

@@ -3,8 +3,6 @@
 
     public class PriceOfProductBelowAlertConfiguration : IAlertConfiguration
     {
-        private readonly PriceMeScrapperResults _results;
-
         public decimal PriceToMatch { get; private set; }
         public string TitleToMatch { get; private set; }
 

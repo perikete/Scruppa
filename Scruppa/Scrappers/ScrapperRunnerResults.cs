@@ -7,17 +7,17 @@ namespace Scruppa.Scrappers
     {
         public class ScrapperRunnerResults
         {
-            private readonly IDictionary<string, List<KeyValuePair<IAlertConfiguration, bool>>> _scrapperRunResults;
+            private readonly IDictionary<string, List<KeyValuePair<ScrapperRunnerConfiguration, bool>>> _scrapperRunResults;
 
             public ScrapperRunnerResults()
             {
-                _scrapperRunResults = new Dictionary<string, List<KeyValuePair<IAlertConfiguration, bool>>>();
+                _scrapperRunResults = new Dictionary<string, List<KeyValuePair<ScrapperRunnerConfiguration, bool>>>();
             }
 
-            public void AddResult(BaseScrapper scrapper, IAlertConfiguration configuration, bool alertValue)
+            public void AddResult(BaseScrapper scrapper, ScrapperRunnerConfiguration configuration, bool alertValue)
             {
 
-                var resultKvp = new KeyValuePair<IAlertConfiguration, bool>(configuration, alertValue);
+                var resultKvp = new KeyValuePair<ScrapperRunnerConfiguration, bool>(configuration, alertValue);
                 var key = scrapper.GetType().Name;
                 
                 if (_scrapperRunResults.ContainsKey(key))
@@ -26,16 +26,16 @@ namespace Scruppa.Scrappers
                 }
                 else
                 {
-                    _scrapperRunResults.Add(key, new List<KeyValuePair<IAlertConfiguration, bool>> { resultKvp });
+                    _scrapperRunResults.Add(key, new List<KeyValuePair<ScrapperRunnerConfiguration, bool>> { resultKvp });
                 }
             }
 
-            public IDictionary<string, List<KeyValuePair<IAlertConfiguration, bool>>> GetResults()
+            public IDictionary<string, List<KeyValuePair<ScrapperRunnerConfiguration, bool>>> GetResults()
             {
                 return _scrapperRunResults;
             }
             
-            public IEnumerable<KeyValuePair<IAlertConfiguration, bool>> GetResultsForScrapper<TScrapper>()
+            public IEnumerable<KeyValuePair<ScrapperRunnerConfiguration, bool>> GetResultsForScrapper<TScrapper>()
             {
                 return GetResults()[typeof(TScrapper).Name];
             }
