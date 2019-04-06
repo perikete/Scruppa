@@ -7,17 +7,17 @@ namespace Scruppa.Scrappers
     {
         public class ScrapperRunnerResults
         {
-            private readonly IDictionary<string, List<KeyValuePair<Type, bool>>> _scrapperRunResults;
+            private readonly IDictionary<string, List<KeyValuePair<IAlertConfiguration, bool>>> _scrapperRunResults;
 
             public ScrapperRunnerResults()
             {
-                _scrapperRunResults = new Dictionary<string, List<KeyValuePair<Type, bool>>>();
+                _scrapperRunResults = new Dictionary<string, List<KeyValuePair<IAlertConfiguration, bool>>>();
             }
 
             public void AddResult(BaseScrapper scrapper, IAlertConfiguration configuration, bool alertValue)
             {
 
-                var resultKvp = new KeyValuePair<Type, bool>(configuration.GetType(), alertValue);
+                var resultKvp = new KeyValuePair<IAlertConfiguration, bool>(configuration, alertValue);
                 var key = scrapper.GetType().Name;
                 
                 if (_scrapperRunResults.ContainsKey(key))
@@ -26,16 +26,16 @@ namespace Scruppa.Scrappers
                 }
                 else
                 {
-                    _scrapperRunResults.Add(key, new List<KeyValuePair<Type, bool>> { resultKvp });
+                    _scrapperRunResults.Add(key, new List<KeyValuePair<IAlertConfiguration, bool>> { resultKvp });
                 }
             }
 
-            public IDictionary<string, List<KeyValuePair<Type, bool>>> GetResults()
+            public IDictionary<string, List<KeyValuePair<IAlertConfiguration, bool>>> GetResults()
             {
                 return _scrapperRunResults;
             }
             
-            public IEnumerable<KeyValuePair<Type, bool>> GetResultsForScrapper<TScrapper>()
+            public IEnumerable<KeyValuePair<IAlertConfiguration, bool>> GetResultsForScrapper<TScrapper>()
             {
                 return GetResults()[typeof(TScrapper).Name];
             }
