@@ -1,13 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
-
-   <ItemGroup>
-    <PackageReference Include="OpenScraping" Version="1.4.2" />
+  <ItemGroup>
+    <PackageReference Include="OpenScraping" Version="1.4.2"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0-preview3.19153.1"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0-preview3.19153.1"/>
   </ItemGroup>
-
-
 </Project>

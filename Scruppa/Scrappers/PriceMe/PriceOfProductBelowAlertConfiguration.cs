@@ -1,4 +1,7 @@
-﻿namespace Scruppa.Scrappers.PriceMe
+﻿using System;
+using Microsoft.Extensions.Configuration;
+
+namespace Scruppa.Scrappers.PriceMe
 {
 
     public class PriceOfProductBelowAlertConfiguration : IAlertConfiguration
@@ -17,6 +20,12 @@
         {
             TitleToMatch = titleToMatch;
             PriceToMatch = priceToMatch;
+        }
+
+        public PriceOfProductBelowAlertConfiguration(IConfiguration config)
+        {
+            TitleToMatch = config["PriceMeAlertConfiguration:TitleToMatch"];
+            PriceToMatch = Convert.ToDecimal(config["PriceMeAlertConfiguration:PriceToMatch"]);
         }
 
         public bool Fired(ScrapperResults result)

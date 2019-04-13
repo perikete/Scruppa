@@ -1,0 +1,6 @@
+{
+    "PriceMeAlertConfiguration":{
+        "PriceToMatch": 550,
+        "TitleToMatch": "gopro"
+    }
+}
