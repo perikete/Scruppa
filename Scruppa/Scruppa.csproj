@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <UserSecretsId>d7017ec0-e947-4034-bf95-8c8cfadb69cd</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="OpenScraping" Version="1.4.2"/>
