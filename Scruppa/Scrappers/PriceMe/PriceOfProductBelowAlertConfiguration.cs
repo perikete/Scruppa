@@ -24,7 +24,7 @@
             var priceMeResult = (PriceMeScrapperResults)result;
             _priceValue = priceMeResult.Price;
             return priceMeResult.Title.ToLowerInvariant().Contains(TitleToMatch.ToLowerInvariant())
-                || PriceToMatch <= priceMeResult.Price;
+                && priceMeResult.Price <= PriceToMatch;
         }
     }
 }

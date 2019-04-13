@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Scruppa.Scrappers;
 using Scruppa.Scrappers.PriceMe;
+using Scruppa.ScrappersActions;
 using static Scruppa.Scrappers.ScrapperRunner;
 
 namespace Scruppa
@@ -21,9 +22,11 @@ namespace Scruppa
         {
             var runner = new ScrapperRunner();
             var priceMeAlertConfig = new PriceOfProductBelowAlertConfiguration("hero 7", 550);
+            var scrapperRunnerConfig = new ScrapperRunnerConfiguration(priceMeAlertConfig, SendEmail.SendMail);
+            
             var priceMeScrapper = new PriceMeScrapper();
 
-            runner.AddConfigurations(priceMeScrapper, priceMeAlertConfig);
+            runner.AddConfigurations(priceMeScrapper, scrapperRunnerConfig);
 
             Console.WriteLine("Running scrappers...");
             

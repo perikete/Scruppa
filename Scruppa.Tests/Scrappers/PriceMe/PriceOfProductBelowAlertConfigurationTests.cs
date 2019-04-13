@@ -14,5 +14,45 @@ namespace Scruppa.Tests.Scrappers.PriceMe
 
             Assert.True(alert.Fired(result));
         }
+
+        [Fact]
+        public void When_Price_Is_Above_Condition_Alarm_Should_Be_False()
+        {
+            var result = new PriceMeScrapperResults { Price = 510, Title = "gopro"};
+
+            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+
+            Assert.False(alert.Fired(result));
+        }
+
+        [Fact]
+        public void When_Price_Is_Below_Condition_Alarm_Should_Be_True()
+        {
+            var result = new PriceMeScrapperResults { Price = 450, Title = "gopro"};
+
+            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+
+            Assert.True(alert.Fired(result));
+        }
+
+        [Fact]
+        public void When_Title_Dont_Matches_But_Price_Is_Below_Condition_Alarm_Should_Be_False()
+        {
+            var result = new PriceMeScrapperResults { Price = 450, Title = "gepro"};
+
+            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+
+            Assert.False(alert.Fired(result));
+        }
+
+         [Fact]
+        public void When_Title_Dont_Matches_But_Price_Is_Above_Condition_Alarm_Should_Be_False()
+        {
+            var result = new PriceMeScrapperResults { Price = 510, Title = "gepro"};
+
+            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+
+            Assert.False(alert.Fired(result));
+        }
     }
 }
