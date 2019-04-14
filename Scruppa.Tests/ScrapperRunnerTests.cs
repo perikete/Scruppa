@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Scruppa.Scrappers;
+using Scruppa.ScrappersActions;
 using Xunit;
 
 namespace Scruppa.Tests
@@ -15,7 +16,7 @@ namespace Scruppa.Tests
         {
             var runner = new ScrapperRunner();
 
-            var scrapper1 = Mock.Of<BaseScrapper>();
+            var scrapper1 = Mock.Of<IScrapper>();
             var config1 = Mock.Of<IAlertConfiguration>();
             var config2 = Mock.Of<IAlertConfiguration>();
 
@@ -27,10 +28,8 @@ namespace Scruppa.Tests
             var firstScrapperConfig = configs.First();
             Assert.Equal(1, configs.Count());
             Assert.Equal(firstScrapperConfig.Key, scrapper1);
-            var allAlertConfigs = firstScrapperConfig.Value.Select(o => o.ScrapperAlertConfiguration);
+            var allAlertConfigs = firstScrapperConfig.Value.Select(o => o.GetAlertDescription());
             Assert.Equal(allAlertConfigs.Count(), 2);
-            Assert.True(allAlertConfigs.Any(o => o == config1));
-            Assert.True(allAlertConfigs.Any(o => o == config2));
         }
 
         [Fact]
@@ -71,13 +70,14 @@ namespace Scruppa.Tests
         public async void True_Result_With_Action_To_Execute_Should_Be_Fired()
         {
             var runner = new ScrapperRunner();
-            var executed = false;
-
             var result = new TestScrapperResults() { Test = true };
             var scrapper = new TestScrapper(result);
             var config = new TestAlertConfig(true);
+            var mockAction = new Mock<IScrapperAction>();
+            mockAction.Setup(o => o.RunAction(result)).Verifiable();
 
-            var runConfig = new ScrapperRunnerConfiguration(config, (x) => { executed = ((TestScrapperResults)x).Test; });
+
+            var runConfig = new ScrapperRunnerConfiguration(config, mockAction.Object);
             runner.AddConfigurations(scrapper, runConfig);
 
             var results = await runner.RunAllConfigurations();
@@ -86,7 +86,7 @@ namespace Scruppa.Tests
 
             var firstResult = testScrapperRunResults.First();
             Assert.Equal(1, testScrapperRunResults.Count());
-            Assert.True(executed);
+            mockAction.VerifyAll();
             Assert.True(firstResult.Value);
         }
 
@@ -94,13 +94,12 @@ namespace Scruppa.Tests
         public async void False_Result_With_Action_To_Execute_Should_Not_Be_Fired()
         {
             var runner = new ScrapperRunner();
-            var executed = false;
-
             var result = new TestScrapperResults() { Test = false };
             var scrapper = new TestScrapper(result);
             var config = new TestAlertConfig(true);
+            var mockAction = new Mock<IScrapperAction>();
 
-            var runConfig = new ScrapperRunnerConfiguration(config, (x) => { executed = ((TestScrapperResults)x).Test; });
+            var runConfig = new ScrapperRunnerConfiguration(config, mockAction.Object);
             runner.AddConfigurations(scrapper, runConfig);
 
             var results = await runner.RunAllConfigurations();
@@ -109,7 +108,7 @@ namespace Scruppa.Tests
 
             var firstResult = testScrapperRunResults.First();
             Assert.Equal(1, testScrapperRunResults.Count());
-            Assert.False(executed);
+            mockAction.Verify(o => o.RunAction(result), Times.Never);
             Assert.False(firstResult.Value);
         }
     }

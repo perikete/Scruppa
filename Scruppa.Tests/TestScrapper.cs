@@ -1,20 +1,23 @@
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Scruppa.Scrappers;
 
 namespace Scruppa.Tests
 {
-    public class TestScrapper : BaseScrapper
+    public class TestScrapper : IScrapper
     {
         private readonly TestScrapperResults result;
 
-        public override string Name => "Test Scrapper";
+        public string Name => "Test Scrapper";
+
+        public string ScrapperUri => "Test URI";
 
         public TestScrapper(TestScrapperResults result)
         {
             this.result = result;
         }
 
-        public override Task<ScrapperResults> Scrap()
+        public Task<ScrapperResults> Scrap()
         {
             return Task.FromResult((ScrapperResults)result);
         }

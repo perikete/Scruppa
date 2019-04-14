@@ -1,19 +1,20 @@
 using System;
+using Scruppa.ScrappersActions;
 
 namespace Scruppa.Scrappers
 {
     public class ScrapperRunnerConfiguration
     {
-        public IAlertConfiguration ScrapperAlertConfiguration { get; private set; }
-        private Action<ScrapperResults> _actionToFire;
+        private readonly IAlertConfiguration _scrapperAlertConfiguration;
+        private readonly IScrapperAction _actionToFire;
 
         public ScrapperRunnerConfiguration(IAlertConfiguration scrapperAlertConfiguration)
         {
-            ScrapperAlertConfiguration = scrapperAlertConfiguration;
+            _scrapperAlertConfiguration = scrapperAlertConfiguration;
             
         }
 
-        public ScrapperRunnerConfiguration(IAlertConfiguration scrapperAlertConfiguration, Action<ScrapperResults> actionToFire)
+        public ScrapperRunnerConfiguration(IAlertConfiguration scrapperAlertConfiguration, IScrapperAction actionToFire)
             : this(scrapperAlertConfiguration)
         {
             _actionToFire = actionToFire;
@@ -22,8 +23,18 @@ namespace Scruppa.Scrappers
         public void FireAction(ScrapperResults result)
         {
             if (_actionToFire != null) {
-                _actionToFire(result);
+                _actionToFire.RunAction(result);
             }
+        }
+
+        public bool AlertFired(ScrapperResults result)
+        {
+            return _scrapperAlertConfiguration.Fired(result);
+        }
+
+        public string GetAlertDescription()
+        {
+            return _scrapperAlertConfiguration.GetDescription();
         }
     }
 }

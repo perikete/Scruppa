@@ -23,13 +23,19 @@ namespace Scruppa
             Console.ReadLine();
         }
 
+        public static string TransformPriceMeResultsToSms(ScrapperResults results)
+        {
+            var priceMeScrapperResult = (PriceMeScrapperResults)results;
+            return $"Price Me Scrapper({results.ScrapperUri}) result found this match: {priceMeScrapperResult.Title} with price: {priceMeScrapperResult.Price}"; 
+        }
+
         public static async Task<ScrapperRunnerResults> RunScrappers(IConfiguration configuration)
         {
             var runner = new ScrapperRunner();
             var priceMeAlertConfig = new PriceOfProductBelowAlertConfiguration(configuration);
-            var scrapperRunnerConfig = new ScrapperRunnerConfiguration(priceMeAlertConfig, SendEmail.SendMail);
+            var scrapperRunnerConfig = new ScrapperRunnerConfiguration(priceMeAlertConfig, new TwilioSmsAction((result) => TransformPriceMeResultsToSms(result)));
 
-            var priceMeScrapper = new PriceMeScrapper();
+            var priceMeScrapper = new PriceMeScrapper(configuration);
 
             runner.AddConfigurations(priceMeScrapper, scrapperRunnerConfig);
 
@@ -45,7 +51,7 @@ namespace Scruppa
 
                 foreach (var config in result.Value)
                 {
-                    Console.WriteLine($"for the config({config.Key.GetType().Name}): {config.Key.ScrapperAlertConfiguration.GetDescription()} with value: {config.Value}.");
+                    Console.WriteLine($"for the config({config.Key.GetType().Name}): {config.Key.GetAlertDescription()} with value: {config.Value}.");
                 }
             }
 
