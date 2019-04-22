@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Scruppa.Scrappers;
+using Scruppa.Scrappers.Logger;
 using Scruppa.Scrappers.PriceMe;
 using Scruppa.ScrappersActions;
 using Scruppa.ScrappersActions.Twilio;
@@ -25,7 +26,7 @@ namespace Scruppa
                 builder.AddUserSecrets<Program>();
             }
 
-            RunScrappers(builder.Build()).Wait();
+            RunScrappers(builder.Build(), new DefaultLogger()).Wait();
 
             Console.ReadLine();
         }
@@ -36,29 +37,29 @@ namespace Scruppa
             return $"Price Me Scrapper({results.ScrapperUri}) result found this match: {priceMeScrapperResult.Title} with price: {priceMeScrapperResult.Price}";
         }
 
-        public static async Task<ScrapperRunnerResults> RunScrappers(IConfiguration configuration)
+        public static async Task<ScrapperRunnerResults> RunScrappers(IConfiguration configuration, ILogger logger)
         {
-            var runner = new ScrapperRunner();
+            var runner = new ScrapperRunner(logger);
             var priceMeAlertConfig = new PriceOfProductBelowAlertConfiguration(configuration);
-            var scrapperRunnerConfig = new ScrapperRunnerConfiguration(priceMeAlertConfig, new TwilioSmsAction((result) => TransformPriceMeResultsToSms(result), configuration));
+            var scrapperRunnerConfig = new ScrapperRunnerConfiguration(priceMeAlertConfig, new TwilioSmsAction((result) => TransformPriceMeResultsToSms(result), configuration, logger));
 
             var priceMeScrapper = new PriceMeScrapper(configuration);
 
             runner.AddConfigurations(priceMeScrapper, scrapperRunnerConfig);
 
-            Console.WriteLine("Running scrappers...");
+            logger.Log("Running scrappers...");
 
             var results = await runner.RunAllConfigurations();
 
-            Console.WriteLine("Scrappers ran successfully, showing results...");
+            logger.Log("Scrappers ran successfully, showing results...");
 
             foreach (var result in results.GetResults())
             {
-                Console.WriteLine($"Match result for Scrapper: {result.Key}:");
+                logger.Log($"Match result for Scrapper: {result.Key}:");
 
                 foreach (var config in result.Value)
                 {
-                    Console.WriteLine($"for the config({config.Key.GetType().Name}): {config.Key.GetAlertDescription()} with value: {config.Value}.");
+                    logger.Log($"for the config({config.Key.GetType().Name}): {config.Key.GetAlertDescription()} with value: {config.Value}.");
                 }
             }
 

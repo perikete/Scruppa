@@ -2,16 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Scruppa.Scrappers.Logger;
 
 namespace Scruppa.Scrappers
 {
     public partial class ScrapperRunner
     {
+        private const string Indent = "     ";
         private readonly IDictionary<IScrapper, HashSet<ScrapperRunnerConfiguration>> _scrapperConfigs;
+        private readonly ILogger _logger;
 
-        public ScrapperRunner()
+        public ScrapperRunner(ILogger logger)
         {
             _scrapperConfigs = new Dictionary<IScrapper, HashSet<ScrapperRunnerConfiguration>>();
+            _logger = logger;
         }
 
         public void AddConfigurations(IScrapper scrapper, IAlertConfiguration config)
@@ -44,16 +48,21 @@ namespace Scruppa.Scrappers
             foreach (var scrapperConfig in _scrapperConfigs)
             {
                 var scrapper = scrapperConfig.Key;
+                
+                _logger.Log($"Running scrapper {scrapper.Name}...");
 
                 var result = await scrapper.Scrap();
                 var scrapperRunnerConfigs = scrapperConfig.Value;
 
                 foreach (var scrapperRunnerConfig in scrapperRunnerConfigs)
                 {
+                    _logger.Log($"{Indent} Running configuration {scrapperRunnerConfig.GetType().Name}");
+
                     var runResult = scrapperRunnerConfig.AlertFired(result);
                     
                     if (runResult)
                     {
+                        _logger.Log($"{Indent} Matched condition, firing action...");
                         scrapperRunnerConfig.FireAction(result);
                     }
 

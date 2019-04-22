@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Scruppa.Scrappers;
+using Scruppa.Scrappers.Logger;
 using Scruppa.ScrappersActions;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace Scruppa.Tests
         [Fact]
         public void Can_Add_Scrapper_Configs()
         {
-            var runner = new ScrapperRunner();
+            var runner = new ScrapperRunner(Mock.Of<ILogger>());
 
             var scrapper1 = Mock.Of<IScrapper>();
             var config1 = Mock.Of<IAlertConfiguration>();
@@ -47,7 +48,7 @@ namespace Scruppa.Tests
             var config4 = new TestAlertConfig(false);
 
 
-            var scrapperRunner = new ScrapperRunner();
+            var scrapperRunner = new ScrapperRunner(Mock.Of<ILogger>());
 
             scrapperRunner.AddConfigurations(scrapper, config);
             scrapperRunner.AddConfigurations(scrapper, config1);
@@ -69,7 +70,7 @@ namespace Scruppa.Tests
         [Fact]
         public async void True_Result_With_Action_To_Execute_Should_Be_Fired()
         {
-            var runner = new ScrapperRunner();
+            var runner = new ScrapperRunner(Mock.Of<ILogger>());
             var result = new TestScrapperResults() { Test = true };
             var scrapper = new TestScrapper(result);
             var config = new TestAlertConfig(true);
@@ -93,7 +94,7 @@ namespace Scruppa.Tests
          [Fact]
         public async void False_Result_With_Action_To_Execute_Should_Not_Be_Fired()
         {
-            var runner = new ScrapperRunner();
+            var runner = new ScrapperRunner(Mock.Of<ILogger>());
             var result = new TestScrapperResults() { Test = false };
             var scrapper = new TestScrapper(result);
             var config = new TestAlertConfig(true);

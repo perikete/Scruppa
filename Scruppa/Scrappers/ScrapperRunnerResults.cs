@@ -16,7 +16,6 @@ namespace Scruppa.Scrappers
 
             public void AddResult(IScrapper scrapper, ScrapperRunnerConfiguration configuration, bool alertValue)
             {
-
                 var resultKvp = new KeyValuePair<ScrapperRunnerConfiguration, bool>(configuration, alertValue);
                 var key = scrapper.GetType().Name;
                 
@@ -29,7 +28,7 @@ namespace Scruppa.Scrappers
                     _scrapperRunResults.Add(key, new List<KeyValuePair<ScrapperRunnerConfiguration, bool>> { resultKvp });
                 }
             }
-
+            
             public IDictionary<string, List<KeyValuePair<ScrapperRunnerConfiguration, bool>>> GetResults()
             {
                 return _scrapperRunResults;
