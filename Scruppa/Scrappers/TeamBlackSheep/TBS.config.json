@@ -1,0 +1,3 @@
+{
+    "price": "//div[@id='product_description']//p[@class='total']//@x-numeric"
+  }

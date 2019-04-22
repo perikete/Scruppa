@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Scruppa.Scrappers;
 using Scruppa.Scrappers.Logger;
 using Scruppa.Scrappers.PriceMe;
+using Scruppa.Scrappers.TeamBlackSheep;
 using Scruppa.ScrappersActions;
 using Scruppa.ScrappersActions.Twilio;
 using static Scruppa.Scrappers.ScrapperRunner;
@@ -31,21 +32,11 @@ namespace Scruppa
             Console.ReadLine();
         }
 
-        public static string TransformPriceMeResultsToSms(ScrapperResults results)
-        {
-            var priceMeScrapperResult = (PriceMeScrapperResults)results;
-            return $"Price Me Scrapper({results.ScrapperUri}) result found this match: {priceMeScrapperResult.Title} with price: {priceMeScrapperResult.Price}";
-        }
-
         public static async Task<ScrapperRunnerResults> RunScrappers(IConfiguration configuration, ILogger logger)
         {
-            var runner = new ScrapperRunner(logger);
-            var priceMeAlertConfig = new PriceOfProductBelowAlertConfiguration(configuration);
-            var scrapperRunnerConfig = new ScrapperRunnerConfiguration(priceMeAlertConfig, new TwilioSmsAction((result) => TransformPriceMeResultsToSms(result), configuration, logger));
-
-            var priceMeScrapper = new PriceMeScrapper(configuration);
-
-            runner.AddConfigurations(priceMeScrapper, scrapperRunnerConfig);
+            var runner = new ScrapperRunner(logger)
+                .AddPriceMeScrapper(configuration, logger)
+                .AddTbsScrapper(configuration, logger);
 
             logger.Log("Running scrappers...");
 

@@ -5,5 +5,11 @@
             "TitleToMatch": "gopro"
         },
         "PriceMeUri": "https://www.priceme.co.nz/GoPro-Hero-7-Black/p-903036144.aspx"
+    },
+
+    "TBS": {
+        "TbsAlertConfiguration": {
+            "PriceToMatch": 60
+        }
     }
 }

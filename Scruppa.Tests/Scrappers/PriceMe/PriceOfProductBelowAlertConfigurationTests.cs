@@ -10,7 +10,7 @@ namespace Scruppa.Tests.Scrappers.PriceMe
         {
             var result = new PriceMeScrapperResults { Price = 500, Title = "gopro"};
 
-            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+            var alert = new PriceOfProductBelowAlertConfiguration { TitleToMatch = "GoPro", PriceToMatch = 500 };
 
             Assert.True(alert.Fired(result));
         }
@@ -20,7 +20,7 @@ namespace Scruppa.Tests.Scrappers.PriceMe
         {
             var result = new PriceMeScrapperResults { Price = 510, Title = "gopro"};
 
-            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+            var alert = new PriceOfProductBelowAlertConfiguration { TitleToMatch = "GoPro", PriceToMatch = 500 };
 
             Assert.False(alert.Fired(result));
         }
@@ -30,7 +30,7 @@ namespace Scruppa.Tests.Scrappers.PriceMe
         {
             var result = new PriceMeScrapperResults { Price = 450, Title = "gopro"};
 
-            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+            var alert = new PriceOfProductBelowAlertConfiguration { TitleToMatch = "GoPro", PriceToMatch = 500 };
 
             Assert.True(alert.Fired(result));
         }
@@ -40,7 +40,7 @@ namespace Scruppa.Tests.Scrappers.PriceMe
         {
             var result = new PriceMeScrapperResults { Price = 450, Title = "gepro"};
 
-            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+            var alert = new PriceOfProductBelowAlertConfiguration { TitleToMatch = "GoPro", PriceToMatch = 500 };            
 
             Assert.False(alert.Fired(result));
         }
@@ -49,8 +49,8 @@ namespace Scruppa.Tests.Scrappers.PriceMe
         public void When_Title_Dont_Matches_But_Price_Is_Above_Condition_Alarm_Should_Be_False()
         {
             var result = new PriceMeScrapperResults { Price = 510, Title = "gepro"};
-
-            var alert = new PriceOfProductBelowAlertConfiguration("GoPro", 500);
+            
+            var alert = new PriceOfProductBelowAlertConfiguration { TitleToMatch = "GoPro", PriceToMatch = 500 };
 
             Assert.False(alert.Fired(result));
         }
