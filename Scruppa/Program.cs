@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Scruppa.Scrappers;
 using Scruppa.Scrappers.PriceMe;
 using Scruppa.ScrappersActions;
+using Scruppa.ScrappersActions.Twilio;
 using static Scruppa.Scrappers.ScrapperRunner;
 
 namespace Scruppa
@@ -13,23 +14,35 @@ namespace Scruppa
     {
         static void Main(string[] args)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("config.json", optional: true, reloadOnChange: true)
-                .Build();
+            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-            RunScrappers(config).Wait();
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("config.json", optional: true, reloadOnChange: true);
+
+            if (string.IsNullOrWhiteSpace(environmentName) || environmentName == "dev")
+            {
+                builder.AddUserSecrets<Program>();
+            }
+
+            RunScrappers(builder.Build()).Wait();
 
             Console.ReadLine();
+        }
+
+        public static string TransformPriceMeResultsToSms(ScrapperResults results)
+        {
+            var priceMeScrapperResult = (PriceMeScrapperResults)results;
+            return $"Price Me Scrapper({results.ScrapperUri}) result found this match: {priceMeScrapperResult.Title} with price: {priceMeScrapperResult.Price}";
         }
 
         public static async Task<ScrapperRunnerResults> RunScrappers(IConfiguration configuration)
         {
             var runner = new ScrapperRunner();
             var priceMeAlertConfig = new PriceOfProductBelowAlertConfiguration(configuration);
-            var scrapperRunnerConfig = new ScrapperRunnerConfiguration(priceMeAlertConfig, SendEmail.SendMail);
+            var scrapperRunnerConfig = new ScrapperRunnerConfiguration(priceMeAlertConfig, new TwilioSmsAction((result) => TransformPriceMeResultsToSms(result), configuration));
 
-            var priceMeScrapper = new PriceMeScrapper();
+            var priceMeScrapper = new PriceMeScrapper(configuration);
 
             runner.AddConfigurations(priceMeScrapper, scrapperRunnerConfig);
 
@@ -45,7 +58,7 @@ namespace Scruppa
 
                 foreach (var config in result.Value)
                 {
-                    Console.WriteLine($"for the config({config.Key.GetType().Name}): {config.Key.ScrapperAlertConfiguration.GetDescription()} with value: {config.Value}.");
+                    Console.WriteLine($"for the config({config.Key.GetType().Name}): {config.Key.GetAlertDescription()} with value: {config.Value}.");
                 }
             }
 

@@ -7,20 +7,20 @@ namespace Scruppa.Scrappers
 {
     public partial class ScrapperRunner
     {
-        private readonly IDictionary<BaseScrapper, HashSet<ScrapperRunnerConfiguration>> _scrapperConfigs;
+        private readonly IDictionary<IScrapper, HashSet<ScrapperRunnerConfiguration>> _scrapperConfigs;
 
         public ScrapperRunner()
         {
-            _scrapperConfigs = new Dictionary<BaseScrapper, HashSet<ScrapperRunnerConfiguration>>();
+            _scrapperConfigs = new Dictionary<IScrapper, HashSet<ScrapperRunnerConfiguration>>();
         }
 
-        public void AddConfigurations(BaseScrapper scrapper, IAlertConfiguration config)
+        public void AddConfigurations(IScrapper scrapper, IAlertConfiguration config)
         {
             AddConfigurations(scrapper, new ScrapperRunnerConfiguration(config));
 
         }
 
-        public void AddConfigurations(BaseScrapper scrapper, ScrapperRunnerConfiguration runnerConfig)
+        public void AddConfigurations(IScrapper scrapper, ScrapperRunnerConfiguration runnerConfig)
         {
             if (_scrapperConfigs.ContainsKey(scrapper))
             {
@@ -33,7 +33,7 @@ namespace Scruppa.Scrappers
             }
         }
 
-        public IDictionary<BaseScrapper, HashSet<ScrapperRunnerConfiguration>> GetConfigurations()
+        public IDictionary<IScrapper, HashSet<ScrapperRunnerConfiguration>> GetConfigurations()
         {
             return _scrapperConfigs;
         }
@@ -50,7 +50,7 @@ namespace Scruppa.Scrappers
 
                 foreach (var scrapperRunnerConfig in scrapperRunnerConfigs)
                 {
-                    var runResult = scrapperRunnerConfig.ScrapperAlertConfiguration.Fired(result);
+                    var runResult = scrapperRunnerConfig.AlertFired(result);
                     
                     if (runResult)
                     {

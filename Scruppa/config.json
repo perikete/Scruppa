@@ -1,6 +1,9 @@
 {
-    "PriceMeAlertConfiguration":{
-        "PriceToMatch": 550,
-        "TitleToMatch": "gopro"
+    "PriceMe": {
+        "PriceMeAlertConfiguration": {
+            "PriceToMatch": 580,
+            "TitleToMatch": "gopro"
+        },
+        "PriceMeUri": "https://www.priceme.co.nz/GoPro-Hero-7-Black/p-903036144.aspx"
     }
 }

@@ -2,10 +2,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <UserSecretsId>d7017ec0-e947-4034-bf95-8c8cfadb69cd</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="OpenScraping" Version="1.4.2"/>
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0-preview3.19153.1"/>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0-preview3.19153.1"/>
+    <PackageReference Include="Twilio" Version="5.28.2"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.4"/>
   </ItemGroup>
 </Project>

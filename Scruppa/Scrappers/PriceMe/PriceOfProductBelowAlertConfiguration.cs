@@ -24,8 +24,8 @@ namespace Scruppa.Scrappers.PriceMe
 
         public PriceOfProductBelowAlertConfiguration(IConfiguration config)
         {
-            TitleToMatch = config["PriceMeAlertConfiguration:TitleToMatch"];
-            PriceToMatch = Convert.ToDecimal(config["PriceMeAlertConfiguration:PriceToMatch"]);
+            TitleToMatch = config["PriceMe:PriceMeAlertConfiguration:TitleToMatch"];
+            PriceToMatch = Convert.ToDecimal(config["PriceMe:PriceMeAlertConfiguration:PriceToMatch"]);
         }
 
         public bool Fired(ScrapperResults result)
